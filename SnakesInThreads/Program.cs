@@ -10,7 +10,13 @@ namespace SnakesInThreads
     {
         static void Main(string[] args)
         {
+            Program program = new Program();
+            program.Start();
+        }
 
+        private void Start()
+        {
+            throw new NotImplementedException();
         }
     }
 }
