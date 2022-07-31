@@ -16,7 +16,12 @@ namespace SnakesInThreads
 
         private void Start()
         {
-            throw new NotImplementedException();
+            Snake.InitScreen();
+            
+            int count = 100;
+            while(--count >  0)
+                Snake.AddEat();
+            Console.ReadLine();
         }
     }
 }
