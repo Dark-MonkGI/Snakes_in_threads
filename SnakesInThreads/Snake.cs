@@ -6,28 +6,51 @@ using System.Threading.Tasks;
 
 namespace SnakesInThreads
 {
-    public struct Сoordinates
-    {
-        public int x;
-        public int y;
-        public Сoordinates(int x, int y)
-        {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
     internal class Snake
     {
         public static readonly char aSpace = ' ';
         public static readonly char aWall = '#';
         public static readonly char aSnakeBody = '*';
         public static readonly char aEat = '$';
+        public static readonly char[] aHead = new char [] {'<', '>', '^', 'v' };
 
         public static readonly Сoordinates size = new Сoordinates(120, 29);
         private static char[,] screen = new char[size.x, size.y];
 
         private static Random random = new Random();
+
+        Сoordinates head;
+        Direction arrow;
+        Сoordinates step;
+        ConsoleColor color;
+        Queue<Сoordinates> body;
+
+
+        private Snake(Сoordinates start)
+        {
+            this.head = start;
+            this.body = new Queue<Сoordinates> ();
+            body.Enqueue(head);
+            this.color = (ConsoleColor)random.Next(1, 15);
+        }
+
+        public static Snake Create()
+        {
+            Сoordinates start = RandomСoordinat();
+
+            int loop = 50;
+
+            while (!IsEmpty(start) && --loop > 0)
+            {
+                start = RandomСoordinat();
+            }
+
+            if (loop <= 0)
+                return null;
+
+            Snake snake = new Snake(start);
+            return snake;
+        }
 
         public static void InitScreen()
         {
@@ -92,6 +115,9 @@ namespace SnakesInThreads
             return (Сoordinat.x >= 0 && Сoordinat.x < size.x &&
                     Сoordinat.y >= 0 && Сoordinat.y < size.y);
         }
+
+
+
 
     }
 }

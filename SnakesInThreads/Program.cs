@@ -21,6 +21,9 @@ namespace SnakesInThreads
             int count = 100;
             while(--count >  0)
                 Snake.AddEat();
+
+            Snake snake = Snake.Create();
+            
             Console.ReadLine();
         }
     }
