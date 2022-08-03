@@ -8,9 +8,9 @@ namespace SnakesInThreads
 {
     internal enum Direction
     {
-        Left,
-        Right,
-        Top,
-        Bottom
+        Left = 0,
+        Right = 1,
+        Top = 2,
+        Bottom = 3
     }
 }

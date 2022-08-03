@@ -32,6 +32,7 @@ namespace SnakesInThreads
             this.body = new Queue<Сoordinates> ();
             body.Enqueue(head);
             this.color = (ConsoleColor)random.Next(1, 15);
+            TurnTo(Direction.Right);
         }
 
         public static Snake Create()
@@ -72,7 +73,6 @@ namespace SnakesInThreads
             Console.ForegroundColor = color;
             Console.SetCursorPosition(Сoordinat.x, Сoordinat.y);
             Console.Write(symbol);
-
         }
 
         public static void AddEat()
@@ -116,8 +116,62 @@ namespace SnakesInThreads
                     Сoordinat.y >= 0 && Сoordinat.y < size.y);
         }
 
+        private void ShowMe(Сoordinates cHead, Сoordinates cSpace)
+        {
+            PutScreen(cHead, color, aHead[(int)arrow]);
+            //PutScreen(cSpace, color, aSpace);
+        }
 
+        private void TurnTo(Direction direction)
+        {
+            if(this.arrow == direction)
+                return;
+            this.arrow = direction;
+            step.x = 0;
+            step.y = 0;
 
+            switch (arrow)
+            {
+                case Direction.Left:
+                    step.x = -1;
+                    break;
+                case Direction.Right:
+                    step.x = +1;
+                    break;
+                case Direction.Top:
+                    step.y = -1;
+                    break;
+                case Direction.Bottom:
+                    step.y = +1;
+                    break;
+                default:
+                    step.y = 0;
+                    break;
+            }
+        }
+
+        private void Turn()
+        {
+            if (random.Next(10) > 0)
+                if (IsEmpty(head + step))
+                    return;
+            for(int i = 0; i < 10; i++)
+            {
+                TurnTo((Direction)random.Next(0, 4));
+                if (IsEmpty(head + step))
+                    return;
+            }
+        }
+
+        public void Step()
+        {
+            Turn();
+            Сoordinates nextHead = head + step;
+            if (IsEmpty(nextHead))
+                nextHead = head;
+            ShowMe(nextHead, head);
+            head = nextHead;
+        }
 
     }
 }

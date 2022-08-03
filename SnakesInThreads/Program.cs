@@ -17,12 +17,17 @@ namespace SnakesInThreads
         private void Start()
         {
             Snake.InitScreen();
-            
-            int count = 100;
-            while(--count >  0)
-                Snake.AddEat();
 
-            Snake snake = Snake.Create();
+            //int count = 100;
+            //while(--count >  0)
+            //    Snake.AddEat();
+
+            int count = 100;
+            while (--count > 0)
+            {
+                Snake snake = Snake.Create();
+                snake.Step();
+            }
             
             Console.ReadLine();
         }
