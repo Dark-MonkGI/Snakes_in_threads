@@ -10,6 +10,7 @@ namespace SnakesInThreads
     {
         public int x;
         public int y;
+
         public Сoordinates(int x, int y)
         {
             this.x = x;

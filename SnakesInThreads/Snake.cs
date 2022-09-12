@@ -145,7 +145,7 @@ namespace SnakesInThreads
                     step.y = +1;
                     break;
                 default:
-                    step.y = 0;
+                    step.y = +1;
                     break;
             }
         }
@@ -167,7 +167,7 @@ namespace SnakesInThreads
         {
             Turn();
             Сoordinates nextHead = head + step;
-            if (IsEmpty(nextHead))
+            if (!IsEmpty(nextHead))
                 nextHead = head;
             ShowMe(nextHead, head);
             head = nextHead;

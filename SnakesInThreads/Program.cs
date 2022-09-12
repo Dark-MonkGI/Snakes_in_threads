@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SnakesInThreads
@@ -17,18 +18,39 @@ namespace SnakesInThreads
         private void Start()
         {
             Snake.InitScreen();
+            Snake.AddEat();
 
             //int count = 100;
             //while(--count >  0)
             //    Snake.AddEat();
 
-            int count = 100;
-            while (--count > 0)
+            int max = 10;
+            Snake[] snakes = new Snake[max];
+
+            for (int i = 0; i < max; i++)
+                snakes[i] = Snake.Create();
+
+            while (true)
             {
-                Snake snake = Snake.Create();
-                snake.Step();
+                for (int i = 0; i < max; i++)
+                    snakes[i].Step();
+                Thread.Sleep(100);
             }
+
+
+            //20мин
+            //int count = 100;
+            //while (--count > 0)
+            //{
+            //    Snake snake = Snake.Create();
+            //    snake.Step();
+            //}
             
+
+
+
+
+
             Console.ReadLine();
         }
     }
