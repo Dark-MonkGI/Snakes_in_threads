@@ -12,17 +12,14 @@ namespace SnakesInThreads
         static void Main(string[] args)
         {
             Program program = new Program();
-            program.Start();
+            //program.Start();
+            program.StartTwo();
         }
 
         private void Start()
         {
             Snake.InitScreen();
             Snake.AddEat();
-
-            //int count = 100;
-            //while(--count >  0)
-            //    Snake.AddEat();
 
             int max = 10;
             Snake[] snakes = new Snake[max];
@@ -38,20 +35,27 @@ namespace SnakesInThreads
             }
 
 
-            //20мин
-            //int count = 100;
-            //while (--count > 0)
-            //{
-            //    Snake snake = Snake.Create();
-            //    snake.Step();
-            //}
-            
-
-
-
-
-
             Console.ReadLine();
+        }
+
+        private void StartTwo()
+        {
+            Snake.InitScreen();
+            Snake.AddEat();
+
+            int max = 10;
+            Snake[] snakes = new Snake[max];
+            Thread[] threads = new Thread[max]; 
+
+            // Каждый в своем потоке 
+            for (int i = 0; i < max; i++)
+            {
+                snakes[i] = Snake.Create();
+                threads[i] = new Thread(snakes[i].Run);
+                threads[i].IsBackground = true; // поток делаем фоновым 
+                threads[i].Start();
+            }
+            Console.ReadKey();
         }
     }
 }

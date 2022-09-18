@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SnakesInThreads
@@ -18,6 +20,8 @@ namespace SnakesInThreads
         private static char[,] screen = new char[size.x, size.y];
 
         private static Random random = new Random();
+
+        private static object block = new object();
 
         Сoordinates head;
         Direction arrow;
@@ -69,10 +73,14 @@ namespace SnakesInThreads
 
         private static void PutScreen(Сoordinates Сoordinat, ConsoleColor color, char symbol)
         {
-            screen[Сoordinat.x, Сoordinat.y] = symbol;
-            Console.ForegroundColor = color;
-            Console.SetCursorPosition(Сoordinat.x, Сoordinat.y);
-            Console.Write(symbol);
+            lock (block)
+            {
+                screen[Сoordinat.x, Сoordinat.y] = symbol;
+                Console.ForegroundColor = color;
+                Console.SetCursorPosition(Сoordinat.x, Сoordinat.y);
+                Console.Write(symbol);
+            }
+
         }
 
         public static void AddEat()
@@ -119,7 +127,7 @@ namespace SnakesInThreads
         private void ShowMe(Сoordinates cHead, Сoordinates cSpace)
         {
             PutScreen(cHead, color, aHead[(int)arrow]);
-            //PutScreen(cSpace, color, aSpace);
+            PutScreen(cSpace, color, aSpace);//закомментитть для "хвоста" 
         }
 
         private void TurnTo(Direction direction)
@@ -171,6 +179,19 @@ namespace SnakesInThreads
                 nextHead = head;
             ShowMe(nextHead, head);
             head = nextHead;
+        }
+        
+        public void Run()
+        {
+            while (true)
+            {
+                Step();
+                Thread.Sleep(100);
+
+                if(random.Next(100)== 0)
+                    break;
+            }
+            PutScreen(head, color, aSpace);
         }
 
     }
