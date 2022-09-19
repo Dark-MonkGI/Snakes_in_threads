@@ -28,6 +28,7 @@ namespace SnakesInThreads
         Сoordinates step;
         ConsoleColor color;
         Queue<Сoordinates> body;
+        int grow;
 
 
         private Snake(Сoordinates start)
@@ -37,6 +38,7 @@ namespace SnakesInThreads
             body.Enqueue(head);
             this.color = (ConsoleColor)random.Next(1, 15);
             TurnTo(Direction.Right);
+            grow = 0;
         }
 
         public static Snake Create()
@@ -75,6 +77,8 @@ namespace SnakesInThreads
         {
             lock (block)
             {
+                if (!OnScreen(Сoordinat))
+                    return;
                 screen[Сoordinat.x, Сoordinat.y] = symbol;
                 Console.ForegroundColor = color;
                 Console.SetCursorPosition(Сoordinat.x, Сoordinat.y);
@@ -85,9 +89,12 @@ namespace SnakesInThreads
 
         public static void AddEat()
         {
+            if(random.Next(10)>0)
+                return;
+
             Сoordinates newEat = RandomСoordinat();
 
-            int loop = 100;
+            int loop = 50;
 
             while (!IsEmpty(newEat) && --loop > 0)
             {
@@ -124,8 +131,9 @@ namespace SnakesInThreads
                     Сoordinat.y >= 0 && Сoordinat.y < size.y);
         }
 
-        private void ShowMe(Сoordinates cHead, Сoordinates cSpace)
+        private void ShowMe(Сoordinates cHead, Сoordinates cBody, Сoordinates cSpace)
         {
+            PutScreen(cBody, color, aSnakeBody);
             PutScreen(cHead, color, aHead[(int)arrow]);
             PutScreen(cSpace, color, aSpace);//закомментитть для "хвоста" 
         }
@@ -175,9 +183,26 @@ namespace SnakesInThreads
         {
             Turn();
             Сoordinates nextHead = head + step;
-            if (!IsEmpty(nextHead))
+
+            if (IsEmpty(nextHead))
+                body.Enqueue(nextHead);
+            else
                 nextHead = head;
-            ShowMe(nextHead, head);
+
+            if (ScreenFrame(nextHead) == aEat)
+                grow++;
+
+            Сoordinates none = new Сoordinates(-1, -1);
+
+            if (body.Count > 1)
+            {
+                if (grow > 0)
+                    grow--;
+                else
+                    none = body.Dequeue(); 
+            }
+
+            ShowMe(nextHead, head, none);
             head = nextHead;
         }
         
@@ -186,10 +211,12 @@ namespace SnakesInThreads
             while (true)
             {
                 Step();
+                AddEat();
+
                 Thread.Sleep(100);
 
-                if(random.Next(100)== 0)
-                    break;
+                //if(random.Next(100) <= 5)
+                //    break;
             }
             PutScreen(head, color, aSpace);
         }
