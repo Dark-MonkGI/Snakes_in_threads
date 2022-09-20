@@ -11,7 +11,7 @@ namespace SnakesInThreads
     {
         static void Main(string[] args)
         {
-            //  -> 
+            // 
 
             Program program = new Program();
             //program.Start();
@@ -52,6 +52,8 @@ namespace SnakesInThreads
                 snakes[i] = Snake.Create();
                 threads[i] = new Thread(snakes[i].Run);
                 threads[i].IsBackground = true; // поток делаем фоновым 
+                //threads[i].Priority = (ThreadPriority)i; // Расставили приоритеты 
+
                 threads[i].Start();
 
                 //threads[i].Join(); Ожидает окончания работы предыдущего потока

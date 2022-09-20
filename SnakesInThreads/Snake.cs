@@ -23,12 +23,16 @@ namespace SnakesInThreads
 
         private static object block = new object();
 
+        private static int number = 0;
+
+
         Сoordinates head;
         Direction arrow;
         Сoordinates step;
         ConsoleColor color;
         Queue<Сoordinates> body;
         int grow;
+        int numberThread;
 
 
         private Snake(Сoordinates start)
@@ -56,6 +60,8 @@ namespace SnakesInThreads
                 return null;
 
             Snake snake = new Snake(start);
+            snake.numberThread = number;
+            number++;
             return snake;
         }
 
@@ -210,8 +216,11 @@ namespace SnakesInThreads
         {
             while (true)
             {
+                //Monitor.Enter(block); //Блокируем для работы одного потока
                 Step();
                 AddEat();
+                ShowInfo();
+                //Monitor.Exit(block);
 
                 Thread.Sleep(100);
 
@@ -221,5 +230,14 @@ namespace SnakesInThreads
             PutScreen(head, color, aSpace);
         }
 
+        private void ShowInfo()
+        {
+            lock (block)
+            {
+                Console.SetCursorPosition(size.x - 8 , numberThread + 1);
+                Console.ForegroundColor = color;
+                Console.Write($"{numberThread} {body.Count()} #{Thread.CurrentThread.ManagedThreadId}");
+            }
+        }
     }
 }
