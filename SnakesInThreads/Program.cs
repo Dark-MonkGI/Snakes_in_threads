@@ -11,10 +11,9 @@ namespace SnakesInThreads
     {
         static void Main(string[] args)
         {
-            // 
-
             Program program = new Program();
             //program.Start();
+
             program.StartTwo();
         }
 
@@ -58,7 +57,17 @@ namespace SnakesInThreads
 
                 //threads[i].Join(); Ожидает окончания работы предыдущего потока
             }
-            Console.ReadKey();
+
+            while (true)
+            {
+                ConsoleKeyInfo consoleKeyInfo = Console.ReadKey(true);
+
+                if (consoleKeyInfo.KeyChar >= '0' && consoleKeyInfo.KeyChar <= '9')
+                    threads[Convert.ToInt16(consoleKeyInfo.KeyChar.ToString())].Abort();
+
+                if(consoleKeyInfo.Key == ConsoleKey.Escape)
+                    break;  
+            }
         }
     }
 }

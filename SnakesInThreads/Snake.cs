@@ -14,6 +14,7 @@ namespace SnakesInThreads
         public static readonly char aWall = '#';
         public static readonly char aSnakeBody = '*';
         public static readonly char aEat = '$';
+        public static readonly char aNoEat = 'X';
         public static readonly char[] aHead = new char [] {'<', '>', '^', 'v' };
 
         public static readonly Сoordinates size = new Сoordinates(120, 29);
@@ -33,6 +34,7 @@ namespace SnakesInThreads
         Queue<Сoordinates> body;
         int grow;
         int numberThread;
+        bool snakeStop;
 
 
         private Snake(Сoordinates start)
@@ -43,13 +45,14 @@ namespace SnakesInThreads
             this.color = (ConsoleColor)random.Next(1, 15);
             TurnTo(Direction.Right);
             grow = 0;
+            snakeStop = false;  
         }
 
         public static Snake Create()
         {
             Сoordinates start = RandomСoordinat();
 
-            int loop = 50;
+            int loop = 20;
 
             while (!IsEmpty(start) && --loop > 0)
             {
@@ -108,14 +111,17 @@ namespace SnakesInThreads
             }
 
             if (loop > 0)
-                PutScreen(newEat, ConsoleColor.Cyan, aEat);
+                if(random.Next(30) == 0)
+                    PutScreen(newEat, ConsoleColor.Cyan, aNoEat);
+                else
+                    PutScreen(newEat, ConsoleColor.Cyan, aEat);
 
         }
 
         public static bool IsEmpty(Сoordinates Сoordinat)
         {
             char symbol = ScreenFrame(Сoordinat);
-            return (symbol == aSpace || symbol == aEat);
+            return (symbol == aSpace || symbol == aEat || symbol == aNoEat);
         }
 
 
@@ -190,13 +196,17 @@ namespace SnakesInThreads
             Turn();
             Сoordinates nextHead = head + step;
 
-            if (IsEmpty(nextHead))
+            if (IsEmpty(nextHead) && !snakeStop)
                 body.Enqueue(nextHead);
             else
                 nextHead = head;
 
             if (ScreenFrame(nextHead) == aEat)
                 grow++;
+
+            if (ScreenFrame(nextHead) == aNoEat)
+                snakeStop = true;
+
 
             Сoordinates none = new Сoordinates(-1, -1);
 
@@ -216,18 +226,37 @@ namespace SnakesInThreads
         {
             while (true)
             {
-                //Monitor.Enter(block); //Блокируем для работы одного потока
-                Step();
-                AddEat();
-                ShowInfo();
-                //Monitor.Exit(block);
+                try
+                {
+                    while (true)
+                    {
+                        //Monitor.Enter(block); //Блокируем для работы одного потока
+                        Step();
+                        AddEat();
+                        ShowInfo();
+                        //Monitor.Exit(block);
 
-                Thread.Sleep(100);
+                        Thread.Sleep(20);
 
-                //if(random.Next(100) <= 5)
-                //    break;
+                        PutScreen(head, color, aSpace);
+                        //if(random.Next(100) <= 5)
+                        //    break;
+
+                        if(snakeStop && body.Count <= 1)
+                            return;
+                    }
+                    
+                }
+                catch (ThreadAbortException ex)
+                {
+                    snakeStop = true;   
+                    Thread.ResetAbort(); // Отмена остановки потока
+                }
+
+                if (snakeStop && body.Count <= 1)
+                    break;
             }
-            PutScreen(head, color, aSpace);
+            
         }
 
         private void ShowInfo()
